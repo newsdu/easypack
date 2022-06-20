@@ -32,38 +32,32 @@ namespace AppAsToy.EasyPack
         public Span<byte> GetWrittenSpan() => owner.Memory.Span[..WrittenSize];
 
         public void WriteNull() => Write(Constants.NULL);
-        public void Write(bool value) => Write((byte)(value ? 1 : 0));
-        public void Write(byte value)
+        public void WriteBoolean(bool value) => Write((byte)(value ? 1 : 0));
+        public void WriteByte(byte value)
         {
             ThrowIfCannotWrite(1);
             owner.Memory.Span[WrittenSize++] = value;
         }
-        public void Write(sbyte value) => Write((byte)value);
-        public void Write(ushort value) => Write<ushort>(value);
-        public void Write(short value) => Write<short>(value);
-        public void Write(char value) => Write<char>(value);
-        public void Write(uint value) => Write<uint>(value);
-        public void Write(uint value, int bytesCount) => Write<uint>(value, bytesCount);
-        public void Write(int value) => Write<int>(value);
-        public void Write(int value, int bytesCount) => Write<int>(value, bytesCount);
-        public void Write(ulong value) => Write<ulong>(value);
-        public void Write(ulong value, int bytesCount) => Write<ulong>(value, bytesCount);
-        public void Write(long value) => Write<long>(value);
-        public void Write(long value, int bytesCount) => Write<long>(value, bytesCount);
-        public void Write(float value) => Write<float>(value);
-        public void Write(double value) => Write<double>(value);
-        public void Write(decimal value) => Write<decimal>(value);
-        public void Write(string? value)
+        public void WriteSByte(sbyte value) => Write((byte)value);
+        public void WriteUInt16(ushort value) => Write<ushort>(value);
+        public void WriteInt16(short value) => Write<short>(value);
+        public void WriteChar(char value) => Write<char>(value);
+        public void WriteUInt32(uint value) => Write<uint>(value);
+        public void WriteUInt32(uint value, int bytesCount) => Write<uint>(value, bytesCount);
+        public void WriteInt32(int value) => Write<int>(value);
+        public void WriteInt32(int value, int bytesCount) => Write<int>(value, bytesCount);
+        public void WriteUInt64(ulong value) => Write<ulong>(value);
+        public void WriteUInt64(ulong value, int bytesCount) => Write<ulong>(value, bytesCount);
+        public void WriteInt64(long value) => Write<long>(value);
+        public void WriteInt64(long value, int bytesCount) => Write<long>(value, bytesCount);
+        public void WriteSingle(float value) => Write<float>(value);
+        public void WriteDouble(double value) => Write<double>(value);
+        public void WriteDecimal(decimal value) => Write<decimal>(value);
+        public void WriteString(string? value)
         {
-            if (value == null)
+            if (value == null || value.Length == 0)
             {
-                WriteNull();
-                return;
-            }
-
-            if (value.Length == 0)
-            {
-                Write(Constants.ZERO);
+                WriteLength(value?.Length);
                 return;
             }
 
@@ -73,7 +67,9 @@ namespace AppAsToy.EasyPack
             Advance(length);
         }
 
-        public unsafe void Write<T>(T value) where T : unmanaged
+        public void WriteLength(int? length) => LengthHelper.Write(ref this, length);
+
+        unsafe void Write<T>(T value) where T : unmanaged
         {
             var valueSpan = new Span<byte>(&value, sizeof(T));
             if (BitConverter.IsLittleEndian)
@@ -81,7 +77,7 @@ namespace AppAsToy.EasyPack
             WriteInternal(valueSpan);
         }
 
-        public unsafe void Write<T>(T value, int bytesCount) where T : unmanaged
+        unsafe void Write<T>(T value, int bytesCount) where T : unmanaged
         {
             ThrowIfOutOfRange<T>(bytesCount);
             Span<byte> valueSpan;
@@ -118,7 +114,7 @@ namespace AppAsToy.EasyPack
                 throw new OverflowException($"RemainSize({RemainSize}) is less than size({size}).");
         }
 
-        public void WriteLength(int length) => LengthHelper.Write(ref this, length);
+        
 
         public void Dispose()
         {

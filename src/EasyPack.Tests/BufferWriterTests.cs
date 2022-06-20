@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.Buffers.Binary;
 
 namespace AppAsToy.EasyPack.Tests
 {
@@ -82,9 +83,9 @@ namespace AppAsToy.EasyPack.Tests
         public void WriteBoolTest()
         {
             using var writer = BufferWriter.Rent(2);
-            writer.Write(true);
+            writer.WriteBoolean(true);
             writer.GetWrittenSpan()[0].Should().Be(1);
-            writer.Write(false);
+            writer.WriteBoolean(false);
             writer.GetWrittenSpan()[1].Should().Be(0);
         }
 
@@ -92,7 +93,7 @@ namespace AppAsToy.EasyPack.Tests
         public unsafe void WriteCharTest()
         {
             using var writer = BufferWriter.Rent(16);
-            writer.Write('\u1234');
+            writer.WriteChar('\u1234');
             writer.GetWrittenSpan().SequenceEqual(new byte[]{ 0x12, 0x34 }).Should().BeTrue();
         }
 
@@ -100,125 +101,123 @@ namespace AppAsToy.EasyPack.Tests
         public void WriteByteTest()
         {
             using var writer = BufferWriter.Rent(16);
-            writer.Write((byte)0x12);
+            writer.WriteByte(0x12);
             writer.GetWrittenSpan()[0].Should().Be(0x12);
         }
 
         [TestMethod()]
-        public void WriteUShortTest()
+        public void WriteUInt16Test()
         {
+            ushort value = 0x5678;
             using var writer = BufferWriter.Rent(16);
-            writer.Write((ushort)0x5678);
-            writer.GetWrittenSpan().SequenceEqual(new byte[] {0x56,0x78}).Should().BeTrue();
+            writer.WriteUInt16(value);
+            BitConverter.ToUInt16(writer.GetWrittenSpan()).Should().NotBe(value);
+            BinaryPrimitives.ReverseEndianness(BitConverter.ToUInt16(writer.GetWrittenSpan())).Should().Be(value);
         }
 
         [TestMethod()]
-        public void WriteUIntTest()
+        public void WriteUInt32Test()
         {
+            uint value = 0x12345678u;
             using var writer = BufferWriter.Rent(16);
-            writer.Write((uint)0x12345678);
-            writer.GetWrittenSpan().SequenceEqual(new byte[] { 0x12, 0x34, 0x56, 0x78 }).Should().BeTrue();
+            writer.WriteUInt32(value);
+            BitConverter.ToUInt32(writer.GetWrittenSpan()).Should().NotBe(value);
+            BinaryPrimitives.ReverseEndianness(BitConverter.ToUInt32(writer.GetWrittenSpan())).Should().Be(value);
         }
 
         [TestMethod()]
-        public void WriteULongTest()
+        public void WriteUInt64Test()
         {
+            var value = 0x1234567898765432ul;
             using var writer = BufferWriter.Rent(16);
-            writer.Write((ulong)0x1234567887654321);
-            writer.GetWrittenSpan()
-                  .SequenceEqual(new byte[] { 0x12, 0x34, 0x56, 0x78, 0x87, 0x65, 0x43, 0x21 })
-                  .Should()
-                  .BeTrue();
+            writer.WriteUInt64(value);
+            BitConverter.ToUInt64(writer.GetWrittenSpan()).Should().NotBe(value);
+            BinaryPrimitives.ReverseEndianness(BitConverter.ToUInt64(writer.GetWrittenSpan())).Should().Be(value);
         }
 
         [TestMethod()]
         public void WriteSByteTest()
         {
             using var writer = BufferWriter.Rent(16);
-            writer.Write((sbyte)0x12);
+            writer.WriteSByte(0x12);
             writer.GetWrittenSpan()[0].Should().Be(0x12);
         }
 
         [TestMethod()]
-        public void WriteShortTest()
+        public void WriteInt16Test()
         {
+            short value = 0x5678;
             using var writer = BufferWriter.Rent(16);
-            writer.Write((short)0x5678);
-            writer.GetWrittenSpan().SequenceEqual(new byte[] { 0x56, 0x78 }).Should().BeTrue();
+            writer.WriteInt16(value);
+            BitConverter.ToInt16(writer.GetWrittenSpan()).Should().NotBe(value);
+            BinaryPrimitives.ReverseEndianness(BitConverter.ToInt16(writer.GetWrittenSpan())).Should().Be(value);
         }
 
         [TestMethod()]
-        public void WriteIntTest()
+        public void WriteInt32Test()
         {
+            var value = 0x12345678;
             using var writer = BufferWriter.Rent(16);
-            writer.Write(0x12345678);
-            writer.GetWrittenSpan().SequenceEqual(new byte[] { 0x12, 0x34, 0x56, 0x78 }).Should().BeTrue();
+            writer.WriteInt32(value);
+            BitConverter.ToInt32(writer.GetWrittenSpan()).Should().NotBe(value);
+            BinaryPrimitives.ReverseEndianness(BitConverter.ToInt32(writer.GetWrittenSpan())).Should().Be(value);
         }
 
         [TestMethod()]
-        public void WriteLongTest()
+        public void WriteInt64Test()
         {
+            var value = 0x1234567898765432L;
             using var writer = BufferWriter.Rent(16);
-            writer.Write(0x1234567887654321);
-            writer.GetWrittenSpan()
-                  .SequenceEqual(new byte[] { 0x12, 0x34, 0x56, 0x78, 0x87, 0x65, 0x43, 0x21 })
-                  .Should()
-                  .BeTrue();
+            writer.WriteInt64(value);
+            BitConverter.ToInt64(writer.GetWrittenSpan()).Should().NotBe(value);
+            BinaryPrimitives.ReverseEndianness(BitConverter.ToInt64(writer.GetWrittenSpan())).Should().Be(value);
         }
 
         [TestMethod()]
         public unsafe void WriteHalfTest()
         {
-            var value = (Half)0x1234;
-            byte* ptr = (byte*)&value;
+            var halfValue = (Half)0x1234;
+            var value = *(ushort*)&halfValue;
             using var writer = BufferWriter.Rent(16);
-            var writtenValue = new Span<byte>(ptr, 2);
-            writer.Write(value);
-            writtenValue.Reverse();
-            writer.GetWrittenSpan()
-                  .SequenceEqual(writtenValue)
-                  .Should()
-                  .BeTrue();
+            writer.WriteUInt16(value);
+            BitConverter.ToUInt16(writer.GetWrittenSpan()).Should().NotBe(value);
+            BinaryPrimitives.ReverseEndianness(BitConverter.ToUInt16(writer.GetWrittenSpan())).Should().Be(value);
         }
 
         [TestMethod()]
-        public unsafe void WriteFloatTest()
+        public unsafe void WriteSingleTest()
         {
             var value = (float)0x12345678;
-            byte* ptr = (byte*)&value;
             using var writer = BufferWriter.Rent(16);
-            var writtenValue = new Span<byte>(ptr, 4);
-            writer.Write(value);
-            writtenValue.Reverse();
-            writer.GetWrittenSpan()
-                  .SequenceEqual(writtenValue)
-                  .Should()
-                  .BeTrue();
+            writer.WriteSingle(value);
+            BitConverter.ToSingle(writer.GetWrittenSpan()).Should().NotBe(value);
+            var single = BitConverter.ToSingle(writer.GetWrittenSpan());
+            var singleUint = BinaryPrimitives.ReverseEndianness(*(uint*)&single);
+            var reverseSingle = *(float*)&singleUint;
+            reverseSingle.Should().Be(value);
         }
 
         [TestMethod()]
         public unsafe void WriteDoubleTest()
         {
             var value = (double)0x1234567887654321;
-            byte* ptr = (byte*)&value;
             using var writer = BufferWriter.Rent(16);
-            var writtenValue = new Span<byte>(ptr, 8);
-            writer.Write(value);
-            writtenValue.Reverse();
-            writer.GetWrittenSpan()
-                  .SequenceEqual(writtenValue)
-                  .Should()
-                  .BeTrue();
+            writer.WriteDouble(value);
+            BitConverter.ToDouble(writer.GetWrittenSpan()).Should().NotBe(value);
+            var single = BitConverter.ToDouble(writer.GetWrittenSpan());
+            var singleUint = BinaryPrimitives.ReverseEndianness(*(ulong*)&single);
+            var reverseSingle = *(double*)&singleUint;
+            reverseSingle.Should().Be(value);
         }
 
         [TestMethod()]
         public unsafe void WriteDecimalTest()
         {
-            decimal value = new decimal(0x12345678, 0x23456789, 0x68765543, false, 28);
+            decimal value = new (0x12345678, 0x23456789, 0x68765543, false, 28);
             byte* ptr = (byte*)&value;
             using var writer = BufferWriter.Rent(16);
             var writtenValue = new Span<byte>(ptr, 16);
-            writer.Write(value);
+            writer.WriteDecimal(value);
             writtenValue.Reverse();
             writer.GetWrittenSpan()
                   .SequenceEqual(writtenValue)
@@ -231,14 +230,14 @@ namespace AppAsToy.EasyPack.Tests
         {
             using (var writer = BufferWriter.Rent(16))
             {
-                writer.Write(null);
+                writer.WriteString(null);
                 writer.GetWrittenSpan()[0].Should().Be(Constants.NULL);
-                writer.Write("");
+                writer.WriteString("");
                 writer.GetWrittenSpan()[1].Should().Be(Constants.ZERO);
             }
             using (var writer = BufferWriter.Rent(16))
             {
-                writer.Write("abc");
+                writer.WriteString("abc");
                 writer.GetWrittenSpan()[0].Should().Be(3);
                 writer.GetWrittenSpan()[1].Should().Be((byte)'a');
                 writer.GetWrittenSpan()[2].Should().Be((byte)'b');
@@ -274,6 +273,9 @@ namespace AppAsToy.EasyPack.Tests
             }
 
             using (var writer = BufferWriter.Rent(16))
+                new Action(() => writer.WriteLength(-1)).Should().Throw<ArgumentOutOfRangeException>();
+
+            using (var writer = BufferWriter.Rent(16))
                 new Action(() => writer.WriteLength(0b_0011_1111 << 24 | 0xffffff)).Should().Throw<ArgumentOutOfRangeException>();
         }
 
@@ -291,10 +293,10 @@ namespace AppAsToy.EasyPack.Tests
         public void OverflowTest()
         {
             using var writer = BufferWriter.Rent(16);
-            new Action(() => writer.Write(1, -1)).Should().Throw<ArgumentOutOfRangeException>();
-            new Action(() => writer.Write(2, 5)).Should().Throw<ArgumentOutOfRangeException>();
+            new Action(() => writer.WriteInt32(1, -1)).Should().Throw<ArgumentOutOfRangeException>();
+            new Action(() => writer.WriteInt32(2, 5)).Should().Throw<ArgumentOutOfRangeException>();
             writer.Advance(16);
-            new Action(() => writer.Write(3)).Should().Throw<OverflowException>();
+            new Action(() => writer.WriteInt32(3)).Should().Throw<OverflowException>();
         }
     }
 }
