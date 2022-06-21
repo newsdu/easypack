@@ -58,7 +58,7 @@ namespace AppAsToy.EasyPack
 
         public int? ReadLength() => LengthHelper.Read(ref this);
 
-        unsafe T Read<T>() where T : unmanaged
+        public unsafe T Read<T>() where T : unmanaged
         {
             T value;
             var valueSpan = new Span<byte>(&value, sizeof(T));
@@ -69,7 +69,7 @@ namespace AppAsToy.EasyPack
             return value;
         }
 
-        unsafe T Read<T>(int bytesCount) where T : unmanaged
+        public unsafe T Read<T>(int bytesCount) where T : unmanaged
         {
             ThrowIfOutOfRange<T>(bytesCount);
             T value;

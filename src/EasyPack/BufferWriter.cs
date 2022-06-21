@@ -69,7 +69,7 @@ namespace AppAsToy.EasyPack
 
         public void WriteLength(int? length) => LengthHelper.Write(ref this, length);
 
-        unsafe void Write<T>(T value) where T : unmanaged
+        public unsafe void Write<T>(T value) where T : unmanaged
         {
             var valueSpan = new Span<byte>(&value, sizeof(T));
             if (BitConverter.IsLittleEndian)
@@ -77,7 +77,7 @@ namespace AppAsToy.EasyPack
             WriteInternal(valueSpan);
         }
 
-        unsafe void Write<T>(T value, int bytesCount) where T : unmanaged
+        public unsafe void Write<T>(T value, int bytesCount) where T : unmanaged
         {
             ThrowIfOutOfRange<T>(bytesCount);
             Span<byte> valueSpan;
