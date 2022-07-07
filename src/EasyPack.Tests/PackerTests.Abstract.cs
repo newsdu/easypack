@@ -8,7 +8,7 @@ namespace EasyPack.Tests
     partial class PackerTests
     {
         [TestMethod]
-        public void Pack_AbstractType_Test()
+        public void Should_Pack_Abstract_Type()
         {
             Test_Pack_Abstract(new TestDerivedClass1 { a = 1, b = 2 });
             Test_Pack_Abstract(new TestDerivedClass2 { a = 3, c = 4 });

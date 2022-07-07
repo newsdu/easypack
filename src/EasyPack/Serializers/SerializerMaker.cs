@@ -73,7 +73,7 @@ namespace AppAsToy.EasyPack.Serializers
                                    !property.HasAttribute<NonSerializedAttribute>() &&
                                    !property.HasAttribute<IgnorePackAttribute>() &&
                                    (property.GetMethod.IsPublic || property.HasAttribute<LetsPackAttribute>()) &&
-                                   (!property.GetMethod.IsVirtual || property.GetMethod.IsFinal || property == realType.GetProperty(property.Name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)));
+                                   (!property.GetMethod.IsVirtual || property.GetMethod.IsFinal || type == realType.GetProperty(property.Name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)?.DeclaringType));
         }
 
         
@@ -177,7 +177,7 @@ namespace AppAsToy.EasyPack.Serializers
                     foreach (var field in GetSerializableFields(typeItem))
                         yield return field.FieldType;
 
-                    foreach (var property in GetDeserializableProperties(type, typeItem))
+                    foreach (var property in GetSerializableProperties(type, typeItem))
                         yield return property.PropertyType;
                 }
             }

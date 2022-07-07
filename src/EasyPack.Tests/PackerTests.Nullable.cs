@@ -8,7 +8,7 @@ namespace EasyPack.Tests
     partial class PackerTests
     {
         [TestMethod]
-        public void Pack_NullableType_Test()
+        public void Should_Pack_Nullable_Type()
         {
             Test_Pack_Unpack_Nullable<int>(null);
             Test_Pack_Unpack_Nullable<bool>(true);

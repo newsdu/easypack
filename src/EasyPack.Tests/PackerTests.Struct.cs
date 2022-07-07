@@ -8,7 +8,7 @@ namespace EasyPack.Tests
     partial class PackerTests
     {
         [TestMethod]
-        public void Pack_StructType_Test()
+        public void Should_Pack_Struct_Type()
         {
             var testStruct = new TestStruct
             (
