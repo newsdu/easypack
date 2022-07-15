@@ -8,7 +8,7 @@ namespace EasyPack.Tests
     partial class PackerTests
     {
         [TestMethod]
-        public void Should_Pack_Class_Type()
+        public void Pack_Class()
         {
             var testClass = new TestClass();
             {

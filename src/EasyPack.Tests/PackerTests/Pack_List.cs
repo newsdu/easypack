@@ -9,7 +9,7 @@ namespace EasyPack.Tests
     partial class PackerTests
     {
         [TestMethod]
-        public void Should_Pack_List_Type()
+        public void Pack_List()
         {
             Test_Pack_Unpack_List_Raw<int>(null);
             Test_Pack_Unpack_List_Raw(new List<int>());

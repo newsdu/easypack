@@ -9,7 +9,7 @@ namespace EasyPack.Tests
     partial class PackerTests
     {
         [TestMethod]
-        public void Should_Pack_Dictionary()
+        public void Pack_Dictionary()
         {
             Test_Pack_Unpack_Dictionary_Raw<string, int>(null);
             Test_Pack_Unpack_Dictionary_Raw(new Dictionary<string, int>());

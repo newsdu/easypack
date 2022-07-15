@@ -8,10 +8,10 @@ namespace EasyPack.Tests
     partial class PackerTests
     {
         [TestMethod]
-        public void Should_Pack_Abstract_Type()
+        public void Pack_Abstract()
         {
             Test_Pack_Abstract(new TestDerivedClass1 { a = 1, b = 2 });
-            Test_Pack_Abstract(new TestDerivedClass2 { a = 3, c = 4 });
+            Test_Pack_Abstract(new TestDerivedClass2 { a = 3, b = 4, c = 5 });
         }
         
         void Test_Pack_Abstract(TestAbstract instance)
@@ -35,7 +35,7 @@ namespace EasyPack.Tests
             public int b { get; set; }
         }
 
-        class TestDerivedClass2 : TestAbstract
+        class TestDerivedClass2 : TestDerivedClass1
         {
             public override int a { get; set; }
             public int c { get; set; }

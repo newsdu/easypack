@@ -8,7 +8,7 @@ namespace EasyPack.Tests
     partial class PackerTests
     {
         [TestMethod]
-        public void Should_Pack_Interface_Type()
+        public void Pack_Interface()
         {
             Test_Pack_Interface(new TestImplementClass() { a = 1 });
             Test_Pack_Interface(new TestImplementStruct() { a = 2 });

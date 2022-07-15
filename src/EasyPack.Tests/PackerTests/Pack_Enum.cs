@@ -14,7 +14,7 @@ namespace EasyPack.Tests
         enum _long : long { _1 = -1 }
 
         [TestMethod]
-        public void Should_Pack_Enum_Type()
+        public void Pack_Enum()
         {
             Test_Pack_Unpack(_byte._1);
             Test_Pack_Unpack(_ushort._1);

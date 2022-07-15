@@ -9,7 +9,7 @@ namespace EasyPack.Tests
     public partial class PackerTests
     {
         [TestMethod]
-        public void Should_Pack_Primitive_Type()
+        public void Pack_Primitive()
         {
             Test_Pack_Unpack(false);
             Test_Pack_Unpack(true);

@@ -15,6 +15,7 @@ namespace AppAsToy.EasyPack
             new EnumResolver(),
             new NullableResolver(),
             new CollectionResolver(),
+            new TupleResolver(),
             new ClassResolver(),
             new StructResolver(),
             new AbstractResolver(),
