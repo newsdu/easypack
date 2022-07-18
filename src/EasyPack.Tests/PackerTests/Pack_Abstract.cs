@@ -1,13 +1,13 @@
 ﻿using AppAsToy.EasyPack;
 using FluentAssertions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using Xunit;
 
 namespace EasyPack.Tests
 {
     partial class PackerTests
     {
-        [TestMethod]
+        [Fact]
         public void Pack_Abstract()
         {
             Test_Pack_Abstract(new TestDerivedClass1 { a = 1, b = 2 });

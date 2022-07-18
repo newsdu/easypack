@@ -1,4 +1,4 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Xunit;
 
 namespace EasyPack.Tests
 {
@@ -13,7 +13,7 @@ namespace EasyPack.Tests
         enum _int : int { _1 = -1 }
         enum _long : long { _1 = -1 }
 
-        [TestMethod]
+        [Fact]
         public void Pack_Enum()
         {
             Test_Pack_Unpack(_byte._1);

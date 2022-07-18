@@ -1,14 +1,14 @@
 ﻿using AppAsToy.EasyPack;
 using FluentAssertions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Runtime.CompilerServices;
+using Xunit;
 
 namespace EasyPack.Tests
 {
     partial class PackerTests
     {
-        [TestMethod]
+        [Fact]
         public void Pack_Tuple()
         {
             TestPackTuple(new Tuple<int, string>(1, "abc"));

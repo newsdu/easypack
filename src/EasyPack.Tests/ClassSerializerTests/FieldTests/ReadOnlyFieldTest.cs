@@ -1,13 +1,12 @@
 ﻿using AppAsToy.EasyPack;
 using FluentAssertions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
+using Xunit;
 
 namespace EasyPack.Tests
 {
     partial class ClassSerializerTests
     {
-        [TestMethod]
+        [Fact]
         public void Should_Serialize_Field_ReadOnly()
         {
             using var pack = Packer.Pack(new TestField_ReadOnly(1, 2, 3));

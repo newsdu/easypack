@@ -1,23 +1,20 @@
-﻿using AppAsToy.EasyPack;
-using FluentAssertions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using FluentAssertions;
 using System;
 using System.Buffers.Binary;
-
+using Xunit;
 
 namespace AppAsToy.EasyPack.Tests
 {
-    [TestClass()]
     public class BufferReaderTests
     {
-        [TestMethod()]
+        [Fact]
         public void IsValidTest()
         {
             new BufferReader().IsValid.Should().BeFalse();
             new BufferReader(new byte[1]).IsValid.Should().BeTrue();
         }
 
-        [TestMethod()]
+        [Fact]
         public void AdvanceTest()
         {
             var reader = new BufferReader(new byte[4]);
@@ -30,7 +27,7 @@ namespace AppAsToy.EasyPack.Tests
             reader.ReadSize.Should().Be(3);
         }
 
-        [TestMethod()]
+        [Fact]
         public void GetSpanTest()
         {
             var reader = new BufferReader(new byte[4]);
@@ -41,7 +38,7 @@ namespace AppAsToy.EasyPack.Tests
             reader.GetSpan().IsEmpty.Should().BeTrue();
         }
 
-        [TestMethod()]
+        [Fact]
         public void ReadNullTest()
         {
             var reader = new BufferReader(new byte[4]);
@@ -50,60 +47,60 @@ namespace AppAsToy.EasyPack.Tests
             reader.RemainSize.Should().Be(3);
         }
 
-        [DataTestMethod]
-        [DataRow((byte)0, false)]
-        [DataRow((byte)1, true)]
-        [DataRow(byte.MaxValue, true)]
+        [Theory]
+        [InlineData((byte)0, false)]
+        [InlineData((byte)1, true)]
+        [InlineData(byte.MaxValue, true)]
         public void ReadBooleanTest(byte value, bool expected)
         {
             new BufferReader(new byte[] { value }).ReadBoolean().Should().Be(expected);
         }
 
-        [DataTestMethod]
-        [DataRow((byte)1)]
-        [DataRow(byte.MinValue)]
-        [DataRow(byte.MaxValue)]
+        [Theory]
+        [InlineData((byte)1)]
+        [InlineData(byte.MinValue)]
+        [InlineData(byte.MaxValue)]
         public void ReadByteTest(byte value)
         {
             new BufferReader(new byte[] { value }).ReadByte().Should().Be(value);
         }
 
-        [DataTestMethod]
-        [DataRow((sbyte)1)]
-        [DataRow(sbyte.MinValue)]
-        [DataRow(sbyte.MaxValue)]
+        [Theory]
+        [InlineData((sbyte)1)]
+        [InlineData(sbyte.MinValue)]
+        [InlineData(sbyte.MaxValue)]
         public void ReadSByteTest(sbyte value)
         {
             new BufferReader(new byte[] { (byte)value }).ReadSByte().Should().Be(value);
         }
 
-        [DataTestMethod]
-        [DataRow((ushort)1)]
+        [Theory]
+        [InlineData((ushort)1)]
         public void ReadUInt16Test(ushort value)
         {
             new BufferReader(BitConverter.GetBytes(value)).ReadUInt16().Should().NotBe(value);
             new BufferReader(BitConverter.GetBytes(BinaryPrimitives.ReverseEndianness(value))).ReadUInt16().Should().Be(value);
         }
 
-        [DataTestMethod]
-        [DataRow((short)1)]
-        [DataRow(short.MinValue)]
-        [DataRow(short.MaxValue)]
+        [Theory]
+        [InlineData((short)1)]
+        [InlineData(short.MinValue)]
+        [InlineData(short.MaxValue)]
         public void ReadInt16Test(short value)
         {
             new BufferReader(BitConverter.GetBytes(value)).ReadInt16().Should().NotBe(value);
             new BufferReader(BitConverter.GetBytes(BinaryPrimitives.ReverseEndianness(value))).ReadInt16().Should().Be(value);
         }
 
-        [DataTestMethod]
-        [DataRow((char)1)]
+        [Theory]
+        [InlineData((char)1)]
         public void ReadCharTest(char value)
         {
             new BufferReader(BitConverter.GetBytes(value)).ReadChar().Should().NotBe(value);
             new BufferReader(BitConverter.GetBytes(BinaryPrimitives.ReverseEndianness(value))).ReadChar().Should().Be(value);
         }
 
-        [TestMethod]
+        [Fact]
         public void ReadUInt32Test()
         {
             var value = 1u;
@@ -111,56 +108,52 @@ namespace AppAsToy.EasyPack.Tests
             new BufferReader(BitConverter.GetBytes(BinaryPrimitives.ReverseEndianness(value))).ReadUInt32().Should().Be(value);
         }
 
-        [DataTestMethod]
-        [DataRow(1u, 1)]
-        [DataRow(1u, 2)]
-        [DataRow(1u, 3)]
-        [DataRow(1u, 4)]
-        public void ReadUInt32Test(uint value, int bytesCount)
+        [Theory]
+        [InlineData(1U, 2)]
+        [InlineData(1U, 3)]
+        [InlineData(1U, 4)]
+        public void ReadUInt32Test_BytesCount(uint value, int bytesCount)
         {
-            new BufferReader(BitConverter.GetBytes(value)).ReadUInt32(bytesCount).Should().NotBe(value);
-            new BufferReader(BitConverter.GetBytes(BinaryPrimitives.ReverseEndianness(value))).ReadUInt32(bytesCount).Should().Be(value);
+            new BufferReader(BitConverter.GetBytes(value)[..bytesCount]).ReadUInt32(bytesCount).Should().NotBe(value);
+            new BufferReader(BitConverter.GetBytes(BinaryPrimitives.ReverseEndianness(value))[(4-bytesCount)..]).ReadUInt32(bytesCount).Should().Be(value);
         }
 
-        [DataTestMethod]
-        [DataRow(1u, -1)]
-        [DataRow(1u, 5)]
-        [ExpectedException(typeof(Exception), AllowDerivedTypes = true)]
+        [Theory]
+        [InlineData(1u, -1)]
+        [InlineData(1u, 5)]
         public void InvalidReadUInt32Test(uint value, int bytesCount)
         {
-            new BufferReader(BitConverter.GetBytes(value)).ReadUInt32(bytesCount);
+            new Action(() => new BufferReader(BitConverter.GetBytes(value)).ReadUInt32(bytesCount)).Should().Throw<Exception>();
         }
 
-        [DataTestMethod]
-        [DataRow(1)]
-        [DataRow(int.MaxValue)]
+        [Theory]
+        [InlineData(1)]
+        [InlineData(int.MaxValue)]
         public void ReadInt32Test(int value)
         {
             new BufferReader(BitConverter.GetBytes(value)).ReadInt32().Should().NotBe(value);
             new BufferReader(BitConverter.GetBytes(BinaryPrimitives.ReverseEndianness(value))).ReadInt32().Should().Be(value);
         }
 
-        [DataTestMethod]
-        [DataRow(1, 1)]
-        [DataRow(1, 2)]
-        [DataRow(1, 3)]
-        [DataRow(1, 4)]
-        public void ReadInt32Test(int value, int bytesCount)
+        [Theory]
+        [InlineData(1, 2)]
+        [InlineData(1, 3)]
+        [InlineData(1, 4)]
+        public void ReadInt32Test_BytesCount(int value, int bytesCount)
         {
-            new BufferReader(BitConverter.GetBytes(value)).ReadInt32(bytesCount).Should().NotBe(value);
-            new BufferReader(BitConverter.GetBytes(BinaryPrimitives.ReverseEndianness(value))).ReadInt32(bytesCount).Should().Be(value);
+            new BufferReader(BitConverter.GetBytes(value)[..bytesCount]).ReadInt32(bytesCount).Should().NotBe(value);
+            new BufferReader(BitConverter.GetBytes(BinaryPrimitives.ReverseEndianness(value))[(4-bytesCount)..]).ReadInt32(bytesCount).Should().Be(value);
         }
 
-        [DataTestMethod]
-        [DataRow(1, -1)]
-        [DataRow(1, 5)]
-        [ExpectedException(typeof(Exception), AllowDerivedTypes = true)]
+        [Theory]
+        [InlineData(1, -1)]
+        [InlineData(1, 5)]
         public void InvalidReadInt32Test(int value, int bytesCount)
         {
-            new BufferReader(BitConverter.GetBytes(value)).ReadInt32(bytesCount);
+            new Action(() => new BufferReader(BitConverter.GetBytes(value)).ReadInt32(bytesCount)).Should().Throw<Exception>();
         }
 
-        [TestMethod]
+        [Fact]
         public void ReadUInt64Test()
         {
             var value = 1ul;
@@ -168,84 +161,80 @@ namespace AppAsToy.EasyPack.Tests
             new BufferReader(BitConverter.GetBytes(BinaryPrimitives.ReverseEndianness(value))).ReadUInt64().Should().Be(value);
         }
 
-        [DataTestMethod]
-        [DataRow(1ul, 1)]
-        [DataRow(1ul, 2)]
-        [DataRow(1ul, 3)]
-        [DataRow(1ul, 4)]
-        [DataRow(1ul, 5)]
-        [DataRow(1ul, 6)]
-        [DataRow(1ul, 7)]
-        [DataRow(1ul, 8)]
-        public void ReadUInt64Test(ulong value, int bytesCount)
+        [Theory]
+        [InlineData(1UL, 2)]
+        [InlineData(1UL, 3)]
+        [InlineData(1UL, 4)]
+        [InlineData(1UL, 5)]
+        [InlineData(1UL, 6)]
+        [InlineData(1UL, 7)]
+        [InlineData(1UL, 8)]
+        public void ReadUInt64Test_BytesCount(ulong value, int bytesCount)
         {
-            new BufferReader(BitConverter.GetBytes(value)).ReadUInt64(bytesCount).Should().NotBe(value);
-            new BufferReader(BitConverter.GetBytes(BinaryPrimitives.ReverseEndianness(value))).ReadUInt64(bytesCount).Should().Be(value);
+            new BufferReader(BitConverter.GetBytes(value)[..bytesCount]).ReadUInt64(bytesCount).Should().NotBe(value);
+            new BufferReader(BitConverter.GetBytes(BinaryPrimitives.ReverseEndianness(value))[(8-bytesCount)..]).ReadUInt64(bytesCount).Should().Be(value);
         }
 
-        [DataTestMethod]
-        [DataRow(1ul, -1)]
-        [DataRow(1ul, 9)]
-        [ExpectedException(typeof(Exception), AllowDerivedTypes = true)]
+        [Theory]
+        [InlineData(1ul, -1)]
+        [InlineData(1ul, 9)]
         public void InvalidReadUInt64Test(ulong value, int bytesCount)
         {
-            new BufferReader(BitConverter.GetBytes(value)).ReadUInt64(bytesCount);
+            new Action(() => new BufferReader(BitConverter.GetBytes(value)).ReadUInt64(bytesCount)).Should().Throw<Exception>();
         }
 
-        [DataTestMethod]
-        [DataRow(1L)]
-        [DataRow(long.MaxValue)]
+        [Theory]
+        [InlineData(1L)]
+        [InlineData(long.MaxValue)]
         public void ReadInt64Test(long value)
         {
             new BufferReader(BitConverter.GetBytes(value)).ReadInt64().Should().NotBe(value);
             new BufferReader(BitConverter.GetBytes(BinaryPrimitives.ReverseEndianness(value))).ReadInt64().Should().Be(value);
         }
 
-        [DataTestMethod]
-        [DataRow(1L, 1)]
-        [DataRow(1L, 2)]
-        [DataRow(1L, 3)]
-        [DataRow(1L, 4)]
-        [DataRow(1L, 5)]
-        [DataRow(1L, 6)]
-        [DataRow(1L, 7)]
-        [DataRow(1L, 8)]
-        public void ReadInt64Test(long value, int bytesCount)
+        [Theory]
+        [InlineData(1L, 2)]
+        [InlineData(1L, 3)]
+        [InlineData(1L, 4)]
+        [InlineData(1L, 5)]
+        [InlineData(1L, 6)]
+        [InlineData(1L, 7)]
+        [InlineData(1L, 8)]
+        public void ReadInt64Test_BytesCount(long value, int bytesCount)
         {
-            new BufferReader(BitConverter.GetBytes(value)).ReadInt64(bytesCount).Should().NotBe(value);
-            new BufferReader(BitConverter.GetBytes(BinaryPrimitives.ReverseEndianness(value))).ReadInt64(bytesCount).Should().Be(value);
+            new BufferReader(BitConverter.GetBytes(value)[..bytesCount]).ReadInt64(bytesCount).Should().NotBe(value);
+            new BufferReader(BitConverter.GetBytes(BinaryPrimitives.ReverseEndianness(value))[(8-bytesCount)..]).ReadInt64(bytesCount).Should().Be(value);
         }
 
-        [DataTestMethod]
-        [DataRow(1L, -1)]
-        [DataRow(1L, 9)]
-        [ExpectedException(typeof(Exception),AllowDerivedTypes =true)]
+        [Theory]
+        [InlineData(1L, -1)]
+        [InlineData(1L, 9)]
         public void InvalidReadInt64Test(long value, int bytesCount)
         {
-            new BufferReader(BitConverter.GetBytes(value)).ReadInt64(bytesCount);
+            new Action(() => new BufferReader(BitConverter.GetBytes(value)).ReadInt64(bytesCount)).Should().Throw<Exception>();
         }
 
-        [DataTestMethod]
-        [DataRow(1f)]
-        [DataRow(float.MinValue)]
-        [DataRow(float.MaxValue)]
+        [Theory]
+        [InlineData(1f)]
+        [InlineData(float.MinValue)]
+        [InlineData(float.MaxValue)]
         public unsafe void ReadSingleTest(float value)
         {
             new BufferReader(BitConverter.GetBytes(value)).ReadSingle().Should().NotBe(value);
             new BufferReader(BitConverter.GetBytes(BinaryPrimitives.ReverseEndianness(*(uint*)&value))).ReadSingle().Should().Be(value);
         }
 
-        [DataTestMethod]
-        [DataRow(1.0)]
-        [DataRow(double.MinValue)]
-        [DataRow(double.MaxValue)]
+        [Theory]
+        [InlineData(1.0)]
+        [InlineData(double.MinValue)]
+        [InlineData(double.MaxValue)]
         public unsafe void ReadDoubleTest(double value)
         {
             new BufferReader(BitConverter.GetBytes(value)).ReadDouble().Should().NotBe(value);
             new BufferReader(BitConverter.GetBytes(BinaryPrimitives.ReverseEndianness(*(ulong*)&value))).ReadDouble().Should().Be(value);
         }
 
-        [TestMethod]
+        [Fact]
         public void ReadDecimalTest()
         {
             Test(1m);
@@ -261,12 +250,12 @@ namespace AppAsToy.EasyPack.Tests
             }
         }
 
-        [DataTestMethod]
-        [DataRow(null)]
-        [DataRow("")]
-        [DataRow("abc")]
-        [DataRow("가나다")]
-        [DataRow("asdfghjklkjhgfdsaqwertyuiopoiuytrewqzxcvbnm,./.,mnbvcxz")]
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData("abc")]
+        [InlineData("가나다")]
+        [InlineData("asdfghjklkjhgfdsaqwertyuiopoiuytrewqzxcvbnm,./.,mnbvcxz")]
         public void ReadStringTest(string value)
         {
             using var writer = BufferWriter.Rent();
@@ -274,13 +263,13 @@ namespace AppAsToy.EasyPack.Tests
             new BufferReader(writer.GetWrittenSpan()).ReadString().Should().Be(value);
         }
 
-        [DataTestMethod]
-        [DataRow(null)]
-        [DataRow(0)]
-        [DataRow(0b_0011_1111)]
-        [DataRow(0b_0011_1111__1111_1111)]
-        [DataRow(0b_0011_1111__1111_1111__1111_1111)]
-        [DataRow(0b_0001_1111__1111_1111__1111_1111__1111_1111)]
+        [Theory]
+        [InlineData(null)]
+        [InlineData(0)]
+        [InlineData(0b_0011_1111)]
+        [InlineData(0b_0011_1111__1111_1111)]
+        [InlineData(0b_0011_1111__1111_1111__1111_1111)]
+        [InlineData(0b_0001_1111__1111_1111__1111_1111__1111_1111)]
         public void ReadLengthTest(int? length)
         {
             using var writer = BufferWriter.Rent();
@@ -288,16 +277,18 @@ namespace AppAsToy.EasyPack.Tests
             new BufferReader(writer.GetWrittenSpan()).ReadLength().Should().Be(length);
         }
 
-        [DataTestMethod]
-        [DataRow(-1)]
-        [DataRow(0b_0011_1111__1111_1111__1111_1111__1111_1111)]
-        [DataRow(int.MaxValue)]
-        [ExpectedException(typeof(Exception), AllowDerivedTypes = true)]
+        [Theory]
+        [InlineData(-1)]
+        [InlineData(0b_0011_1111__1111_1111__1111_1111__1111_1111)]
+        [InlineData(int.MaxValue)]
         public void InvalidReadLengthTest(int? length)
         {
-            using var writer = BufferWriter.Rent();
-            writer.WriteLength(length);
-            new BufferReader(writer.GetWrittenSpan()).ReadLength();
+            new Action(() =>
+            {
+                using var writer = BufferWriter.Rent();
+                writer.WriteLength(length);
+                new BufferReader(writer.GetWrittenSpan()).ReadLength();
+            }).Should().Throw<Exception>();
         }
     }
 }

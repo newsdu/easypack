@@ -1,14 +1,14 @@
 ﻿using AppAsToy.EasyPack;
 using FluentAssertions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
+using Xunit;
 
 namespace EasyPack.Tests
 {
     partial class PackerTests
     {
-        [TestMethod]
+        [Fact]
         public void Pack_List()
         {
             Test_Pack_Unpack_List_Raw<int>(null);

@@ -1,14 +1,14 @@
 ﻿using FluentAssertions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Buffers.Binary;
+using Xunit;
 
 namespace AppAsToy.EasyPack.Tests
 {
-    [TestClass()]
+
     public class BufferWriterTests
     {
-        [TestMethod]
+        [Fact]
         public void IsValidTest()
         {
             new BufferWriter().IsValid.Should().BeFalse();
@@ -16,7 +16,7 @@ namespace AppAsToy.EasyPack.Tests
             writer.IsValid.Should().BeTrue();
         }
 
-        [TestMethod()]
+        [Fact]
         public void RentTest()
         {
             using (var writer = BufferWriter.Rent(1024))
@@ -33,7 +33,7 @@ namespace AppAsToy.EasyPack.Tests
                 writer.Capacity.Should().Be(2048);
         }
 
-        [TestMethod()]
+        [Fact]
         public void AdvanceTest()
         {
             using var writer = BufferWriter.Rent(16);
@@ -44,7 +44,7 @@ namespace AppAsToy.EasyPack.Tests
             writer.RemainSize.Should().Be(9);
         }
 
-        [TestMethod()]
+        [Fact]
         public void GetSpanTest()
         {
             using var writer = BufferWriter.Rent(128);
@@ -53,7 +53,7 @@ namespace AppAsToy.EasyPack.Tests
             writer.GetSpan().Length.Should().Be(121);
         }
 
-        [TestMethod()]
+        [Fact]
         public void GetWrittenMemoryTest()
         {
             using var writer = BufferWriter.Rent(8);
@@ -62,7 +62,7 @@ namespace AppAsToy.EasyPack.Tests
             writer.GetWrittenMemory().Length.Should().Be(7);
         }
 
-        [TestMethod()]
+        [Fact]
         public void GetWrittenSpanTest()
         {
             using var writer = BufferWriter.Rent(8);
@@ -71,7 +71,7 @@ namespace AppAsToy.EasyPack.Tests
             writer.GetWrittenSpan().Length.Should().Be(7);
         }
 
-        [TestMethod()]
+        [Fact]
         public void WriteNullTest()
         {
             using var writer = BufferWriter.Rent(2);
@@ -79,7 +79,7 @@ namespace AppAsToy.EasyPack.Tests
             writer.GetWrittenSpan()[0].Should().Be(Constants.NULL);
         }
 
-        [TestMethod()]
+        [Fact]
         public void WriteBoolTest()
         {
             using var writer = BufferWriter.Rent(2);
@@ -89,7 +89,7 @@ namespace AppAsToy.EasyPack.Tests
             writer.GetWrittenSpan()[1].Should().Be(0);
         }
 
-        [TestMethod()]
+        [Fact]
         public unsafe void WriteCharTest()
         {
             using var writer = BufferWriter.Rent(16);
@@ -97,7 +97,7 @@ namespace AppAsToy.EasyPack.Tests
             writer.GetWrittenSpan().SequenceEqual(new byte[]{ 0x12, 0x34 }).Should().BeTrue();
         }
 
-        [TestMethod()]
+        [Fact]
         public void WriteByteTest()
         {
             using var writer = BufferWriter.Rent(16);
@@ -105,7 +105,7 @@ namespace AppAsToy.EasyPack.Tests
             writer.GetWrittenSpan()[0].Should().Be(0x12);
         }
 
-        [TestMethod()]
+        [Fact]
         public void WriteUInt16Test()
         {
             ushort value = 0x5678;
@@ -115,7 +115,7 @@ namespace AppAsToy.EasyPack.Tests
             BinaryPrimitives.ReverseEndianness(BitConverter.ToUInt16(writer.GetWrittenSpan())).Should().Be(value);
         }
 
-        [TestMethod()]
+        [Fact]
         public void WriteUInt32Test()
         {
             uint value = 0x12345678u;
@@ -125,7 +125,7 @@ namespace AppAsToy.EasyPack.Tests
             BinaryPrimitives.ReverseEndianness(BitConverter.ToUInt32(writer.GetWrittenSpan())).Should().Be(value);
         }
 
-        [TestMethod()]
+        [Fact]
         public void WriteUInt64Test()
         {
             var value = 0x1234567898765432ul;
@@ -135,7 +135,7 @@ namespace AppAsToy.EasyPack.Tests
             BinaryPrimitives.ReverseEndianness(BitConverter.ToUInt64(writer.GetWrittenSpan())).Should().Be(value);
         }
 
-        [TestMethod()]
+        [Fact]
         public void WriteSByteTest()
         {
             using var writer = BufferWriter.Rent(16);
@@ -143,7 +143,7 @@ namespace AppAsToy.EasyPack.Tests
             writer.GetWrittenSpan()[0].Should().Be(0x12);
         }
 
-        [TestMethod()]
+        [Fact]
         public void WriteInt16Test()
         {
             short value = 0x5678;
@@ -153,7 +153,7 @@ namespace AppAsToy.EasyPack.Tests
             BinaryPrimitives.ReverseEndianness(BitConverter.ToInt16(writer.GetWrittenSpan())).Should().Be(value);
         }
 
-        [TestMethod()]
+        [Fact]
         public void WriteInt32Test()
         {
             var value = 0x12345678;
@@ -163,7 +163,7 @@ namespace AppAsToy.EasyPack.Tests
             BinaryPrimitives.ReverseEndianness(BitConverter.ToInt32(writer.GetWrittenSpan())).Should().Be(value);
         }
 
-        [TestMethod()]
+        [Fact]
         public void WriteInt64Test()
         {
             var value = 0x1234567898765432L;
@@ -173,7 +173,7 @@ namespace AppAsToy.EasyPack.Tests
             BinaryPrimitives.ReverseEndianness(BitConverter.ToInt64(writer.GetWrittenSpan())).Should().Be(value);
         }
 
-        [TestMethod()]
+        [Fact]
         public unsafe void WriteHalfTest()
         {
             var halfValue = (Half)0x1234;
@@ -184,7 +184,7 @@ namespace AppAsToy.EasyPack.Tests
             BinaryPrimitives.ReverseEndianness(BitConverter.ToUInt16(writer.GetWrittenSpan())).Should().Be(value);
         }
 
-        [TestMethod()]
+        [Fact]
         public unsafe void WriteSingleTest()
         {
             var value = (float)0x12345678;
@@ -197,7 +197,7 @@ namespace AppAsToy.EasyPack.Tests
             reverseSingle.Should().Be(value);
         }
 
-        [TestMethod()]
+        [Fact]
         public unsafe void WriteDoubleTest()
         {
             var value = (double)0x1234567887654321;
@@ -210,7 +210,7 @@ namespace AppAsToy.EasyPack.Tests
             reverseSingle.Should().Be(value);
         }
 
-        [TestMethod()]
+        [Fact]
         public unsafe void WriteDecimalTest()
         {
             decimal value = new (0x12345678, 0x23456789, 0x68765543, false, 28);
@@ -225,7 +225,7 @@ namespace AppAsToy.EasyPack.Tests
                   .BeTrue();
         }
 
-        [TestMethod()]
+        [Fact]
         public unsafe void WriteStringTest()
         {
             using (var writer = BufferWriter.Rent(16))
@@ -245,7 +245,7 @@ namespace AppAsToy.EasyPack.Tests
             }
         }
 
-        [TestMethod()]
+        [Fact]
         public void WriteLengthTest()
         {
             using (var writer = BufferWriter.Rent(16))
@@ -279,7 +279,7 @@ namespace AppAsToy.EasyPack.Tests
                 new Action(() => writer.WriteLength(0b_0011_1111 << 24 | 0xffffff)).Should().Throw<ArgumentOutOfRangeException>();
         }
 
-        [TestMethod()]
+        [Fact]
         public void DisposeTest()
         {
             using var writer = BufferWriter.Rent();
@@ -289,7 +289,7 @@ namespace AppAsToy.EasyPack.Tests
             new Action(() => writer.Dispose()).Should().NotThrow();
         }
 
-        [TestMethod()]
+        [Fact]
         public void OverflowTest()
         {
             using var writer = BufferWriter.Rent(16);

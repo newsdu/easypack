@@ -1,17 +1,12 @@
 ﻿using AppAsToy.EasyPack;
 using FluentAssertions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Xunit;
 
 namespace EasyPack.Tests
 {
     partial class ClassSerializerTests
     {
-        [TestMethod]
+        [Fact]
         public void Should_Serialize_Property_Abstract()
         {
             using var pack = Packer.Pack(new TestProperty_Derived_From_Abstract(3));

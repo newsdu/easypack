@@ -1,12 +1,12 @@
 ﻿using AppAsToy.EasyPack;
 using FluentAssertions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace EasyPack.Tests
 {
     partial class ClassSerializerTests
     {
-        [TestMethod]
+        [Fact]
         public void Should_Not_Serialize_Property_WriteOnly()
         {
             using var pack = Packer.Pack(new TestProperty_WriteOnly(3));
