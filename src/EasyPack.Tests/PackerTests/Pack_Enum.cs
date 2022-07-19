@@ -1,6 +1,6 @@
 ﻿using Xunit;
 
-namespace EasyPack.Tests
+namespace AppAsToy.EasyPack.Tests
 {
     partial class PackerTests
     {

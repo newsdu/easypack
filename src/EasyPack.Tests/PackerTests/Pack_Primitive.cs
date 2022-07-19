@@ -3,7 +3,7 @@ using FluentAssertions;
 using System;
 using Xunit;
 
-namespace EasyPack.Tests
+namespace AppAsToy.EasyPack.Tests
 {
 
     public partial class PackerTests
